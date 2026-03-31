@@ -62,6 +62,7 @@ async function cargarVacantes() {
     const container = document.getElementById('jobs-container');
     try {
         const { data, error } = await window.supabaseClient
+            .schema('rbgct') // <--- Agrega esta línea
             .from('vacantes')
             .select('*')
             .eq('estado', 'abierta')

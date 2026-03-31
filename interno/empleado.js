@@ -11,10 +11,8 @@ function mostrarNotificacion(mensaje, tipo = 'exito') {
     
     document.body.appendChild(toast);
     
-    // Animar entrada
     setTimeout(() => toast.classList.remove('translate-y-20', 'opacity-0'), 10);
 
-    // Animar salida y destruir
     setTimeout(() => {
         toast.classList.add('translate-y-20', 'opacity-0');
         setTimeout(() => toast.remove(), 500);
@@ -25,21 +23,18 @@ function mostrarNotificacion(mensaje, tipo = 'exito') {
 // LÓGICA DEL PORTAL
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Saludar al usuario
     const nombreCompleto = localStorage.getItem('empleado_nombre') || 'Empleado';
     const primerNombre = nombreCompleto.split(' ')[0];
     document.getElementById('userName').innerText = primerNombre;
     document.getElementById('profileName').innerText = nombreCompleto;
     document.getElementById('profileDoc').innerText = `C.C. ${localStorage.getItem('empleado_documento') || '---'}`;
 
-    // 2. Si es admin, mostrarle botón para volver a su panel
     const rol = localStorage.getItem('empleado_rol');
     if(rol === 'admin') {
         const nav = document.getElementById('nav-actions');
         nav.insertAdjacentHTML('afterbegin', `<a href="../admin/panel.html" class="bg-blue-50 text-corporate-blue hover:bg-blue-100 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 mr-2 transition"><i class="fa-solid fa-shield-halved"></i> Panel Admin</a>`);
     }
 
-    // 3. Obtener el resto de los datos del empleado
     const empId = localStorage.getItem('empleado_id');
     if (empId) {
         try {
@@ -65,14 +60,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 4. Cerrar sesión
     document.getElementById('btn-logout').addEventListener('click', async () => {
         if(window.supabaseClient) await window.supabaseClient.auth.signOut();
         localStorage.clear();
         window.location.href = '../index.html';
     });
 
-    // 5. SOLICITUD DE CERTIFICADO (CON MODAL)
+    // 5. SOLICITUD DE CERTIFICADO
     const btnPedir = document.getElementById('btn-pedir-certificado');
     const modalCert = document.getElementById('modal-opciones-cert');
     
@@ -80,7 +74,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnPedir) {
         btnPedir.addEventListener('click', () => {
-            // Reiniciar valores por defecto
             document.getElementById('cert-dirigido').value = 'A QUIEN INTERESE';
             document.getElementById('cert-con-cargo').checked = true;
             document.getElementById('cert-con-sueldo').checked = true;
@@ -94,7 +87,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Enviando...';
 
-        // Capturar opciones elegidas
         const opciones = {
             dirigido: document.getElementById('cert-dirigido').value.trim() || 'A QUIEN INTERESE',
             cargo: document.getElementById('cert-con-cargo').checked,
@@ -110,7 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     empleado_id: empId,
                     tipo_certificado: 'laboral',
                     estado: 'pendiente',
-                    // Convertimos a JSON para que RRHH lo lea
                     comentarios_rrhh: JSON.stringify(opciones) 
                 }]);
 

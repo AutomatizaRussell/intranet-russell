@@ -7,11 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // EL CANDADO DE SEGURIDAD
         const rolActual = localStorage.getItem('empleado_rol');
-        if (rolActual !== 'admin') {
-            window.location.href = '../index.html';
-        }
+        if (rolActual !== 'admin') window.location.href = '../index.html';
     </script>
     <script>
         tailwind.config = { theme: { extend: { colors: { corporate: { blue: '#001871', light: '#002bc2', bg: '#F8F9FA' } } } } }
@@ -26,7 +23,6 @@
         body { font-family: 'Inter', sans-serif; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        /* Scrollbar del modal */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
@@ -42,12 +38,18 @@
         <div class="px-6 py-6 flex-1">
             <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Gestión RRHH</p>
             <nav class="space-y-2">
-                <button onclick="switchTab('vacantes')" id="btn-vacantes" class="w-full flex items-center gap-3 px-4 py-3 bg-corporate-blue text-white rounded-xl transition-all font-medium shadow-md">
-                    <i class="fa-solid fa-briefcase w-5"></i> Postulaciones
+                <button onclick="switchTab('postulaciones')" id="btn-postulaciones" class="w-full flex items-center gap-3 px-4 py-3 bg-corporate-blue text-white rounded-xl transition-all font-medium shadow-md">
+                    <i class="fa-solid fa-inbox w-5"></i> Postulaciones
                 </button>
+                
+                <button onclick="switchTab('gestion-vacantes')" id="btn-gestion-vacantes" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-corporate-blue rounded-xl transition-all font-medium">
+                    <i class="fa-solid fa-briefcase w-5"></i> Vacantes
+                </button>
+                
                 <button onclick="switchTab('personal')" id="btn-personal" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-corporate-blue rounded-xl transition-all font-medium">
                     <i class="fa-solid fa-users w-5"></i> Directorio Personal
                 </button>
+                
                 <button onclick="switchTab('certificados')" id="btn-certificados" class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-blue-50 hover:text-corporate-blue rounded-xl transition-all font-medium relative">
                     <i class="fa-solid fa-file-signature w-5"></i> Solicitudes
                     <span id="badge-certificados" class="absolute right-3 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full" style="display: none;">0</span>
@@ -71,7 +73,7 @@
     <main class="flex-1 flex flex-col overflow-hidden relative">
         <div class="flex-1 overflow-auto p-8">
             
-            <div id="tab-vacantes" class="tab-content active">
+            <div id="tab-postulaciones" class="tab-content active">
                 <h2 class="text-3xl font-bold text-[#001871] tracking-tight mb-8">Postulaciones Recibidas</h2>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <table class="w-full text-left border-collapse" id="tabla-postulaciones">
@@ -90,8 +92,37 @@
                 </div>
             </div>
 
+            <div id="tab-gestion-vacantes" class="tab-content">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-corporate-blue tracking-tight">Gestión de Vacantes</h2>
+                    <button onclick="abrirModalVacante()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-5 rounded-xl shadow-md transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Nueva Vacante
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full text-left border-collapse" id="tabla-gestion-vacantes">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-100">
+                                <th class="py-4 px-6 font-semibold">Estado</th>
+                                <th class="py-4 px-6 font-semibold">Título de la Vacante</th>
+                                <th class="py-4 px-6 font-semibold">Área</th>
+                                <th class="py-4 px-6 font-semibold text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" class="text-center py-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando vacantes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div id="tab-personal" class="tab-content">
-                <h2 class="text-3xl font-bold text-corporate-blue tracking-tight mb-8">Directorio Interno</h2>
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-corporate-blue tracking-tight">Directorio Interno</h2>
+                    <button onclick="abrirModalEmpleado()" class="bg-corporate-blue hover:bg-blue-800 text-white font-bold py-2.5 px-5 rounded-xl shadow-md transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> Nuevo Empleado
+                    </button>
+                </div>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <table class="w-full text-left border-collapse" id="tabla-personal">
                         <thead>
@@ -100,10 +131,11 @@
                                 <th class="py-4 px-6 font-semibold">Nombre</th>
                                 <th class="py-4 px-6 font-semibold">Área / Cargo</th>
                                 <th class="py-4 px-6 font-semibold">Fecha Ingreso</th>
+                                <th class="py-4 px-6 font-semibold text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td colspan="4" class="text-center py-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando directorio...</td></tr>
+                            <tr><td colspan="5" class="text-center py-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando directorio...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -130,22 +162,125 @@
         </div>
     </main>
 
+    <div id="modalEmpleado" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden transform transition-all">
+            <div class="bg-corporate-blue p-5 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="modalEmpleadoTitle">Nuevo Empleado</h3>
+                <button onclick="cerrarModalEmpleado()" class="text-white/70 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <form id="formEmpleado" class="p-6 space-y-4" onsubmit="guardarEmpleado(event)">
+                <input type="hidden" id="empleadoId">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Documento <span class="text-red-500">*</span></label>
+                        <input type="text" id="empDocumento" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo <span class="text-red-500">*</span></label>
+                        <input type="text" id="empNombre" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Correo Corporativo</label>
+                        <input type="email" id="empCorreo" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Área / División <span class="text-red-500">*</span></label>
+                        <input type="text" id="empArea" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Cargo <span class="text-red-500">*</span></label>
+                        <input type="text" id="empCargo" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Salario Base <span class="text-red-500">*</span></label>
+                        <input type="number" id="empSalario" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Fecha de Ingreso <span class="text-red-500">*</span></label>
+                        <input type="date" id="empFechaIngreso" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Rol en Sistema</label>
+                        <select id="empRol" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                            <option value="empleado">Empleado</option>
+                            <option value="admin">Administrador (RRHH)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3 border-t border-gray-100">
+                    <button type="button" onclick="cerrarModalEmpleado()" class="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</button>
+                    <button type="submit" id="btnGuardarEmpleado" class="px-6 py-2.5 rounded-xl bg-corporate-blue text-white font-bold hover:bg-blue-900 shadow-md transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-save"></i> Guardar Empleado
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalVacante" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+            <div class="bg-corporate-blue p-5 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="modalVacanteTitle">Nueva Vacante</h3>
+                <button onclick="cerrarModalVacante()" class="text-white/70 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <form id="formVacante" class="p-6 space-y-4" onsubmit="guardarVacante(event)">
+                <input type="hidden" id="vacanteId">
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Título de la Oferta <span class="text-red-500">*</span></label>
+                    <input type="text" id="vacanteTitulo" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Área Solicitante <span class="text-red-500">*</span></label>
+                        <select id="vacanteArea" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                            <option value="Auditoría">Auditoría</option>
+                            <option value="Legal">Legal</option>
+                            <option value="Administrativo">Administrativo</option>
+                            <option value="Contabilidad">Contabilidad</option>
+                            <option value="Impuestos">Impuestos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Estado de la Vacante</label>
+                        <select id="vacanteEstado" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors">
+                            <option value="abierta">Abierta (Visible al público)</option>
+                            <option value="cerrada">Cerrada (Oculta)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Descripción y Requisitos <span class="text-red-500">*</span></label>
+                    <textarea id="vacanteDescripcion" rows="4" required class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none text-sm bg-gray-50 focus:bg-white transition-colors resize-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="cerrarModalVacante()" class="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</button>
+                    <button type="submit" id="btnGuardarVacante" class="px-6 py-2.5 rounded-xl bg-corporate-blue text-white font-bold hover:bg-blue-900 shadow-md transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-save"></i> Guardar Vacante
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="plantilla-certificado" class="hidden">
         <div id="certificado-content" class="bg-white text-black relative" style="width: 794px; height: 1123px; padding: 100px 90px; box-sizing: border-box; font-family: 'Arial', sans-serif;">
-            
             <div class="mb-12 flex justify-between items-start">
                 <img src="https://raw.githubusercontent.com/AutomatizaRussell/Resourse_GestionHumana/main/Logo_RB2021.png" alt="Logo" style="height: 65px;">
                 <div id="cert-fecha-top" class="text-sm text-gray-600 pt-4">Medellín, ...</div>
             </div>
-
-            <div class="mb-16 mt-8">
-                <p id="cert-dirigido-text" class="font-bold text-lg uppercase text-black">A QUIEN INTERESE</p>
-            </div>
-
+            <div class="mb-16 mt-8"><p id="cert-dirigido-text" class="font-bold text-lg uppercase text-black">A QUIEN INTERESE</p></div>
             <div id="cert-body-editable" contenteditable="true" class="text-justify leading-[2.2] text-[17px] text-gray-800 outline-none hover:bg-gray-50 border border-transparent hover:border-dashed hover:border-blue-400 p-2 rounded transition-colors cursor-text">
                 Certificamos que el señor...
             </div>
-
             <div style="position: absolute; bottom: 120px; left: 90px;">
                 <p class="text-gray-800">Atentamente,</p>
                 <div style="width: 250px; border-top: 1px solid black; padding-top: 10px; margin-top: 60px;">
@@ -158,19 +293,16 @@
 
     <div id="modalPreview" class="hidden fixed inset-0 z-50 bg-[#2d3134]/90 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-full max-w-4xl shadow-2xl flex flex-col h-[90vh] overflow-hidden">
-            
             <header class="p-5 border-b border-gray-200 flex justify-between items-center bg-gray-50">
                 <div>
                     <h2 class="text-xl font-bold text-[#001871] flex items-center gap-2"><i class="fa-solid fa-file-pdf text-red-500"></i> Previsualización de Documento</h2>
-                    <p class="text-xs text-gray-500 mt-1"><i class="fa-solid fa-circle-info text-blue-400"></i> Haz clic en el texto del certificado si necesitas editarlo antes de generar.</p>
+                    <p class="text-xs text-gray-600 mt-1"><i class="fa-solid fa-circle-info text-blue-500"></i> Haz clic en la hoja para editar el texto. <b class="text-red-600">Para agregar funciones, presiona "Enter" al final del párrafo y escríbelas.</b></p>
                 </div>
                 <button onclick="cerrarPreview()" class="text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
             </header>
-
             <div class="flex-1 overflow-y-auto bg-[#525659] py-10 flex justify-center" id="previewContainer">
                 <div id="previewCanvas" class="shadow-2xl bg-white origin-top" style="transform: scale(0.85); margin-bottom: -15%;"></div>
             </div>
-
             <footer class="p-5 border-t border-gray-200 flex justify-end gap-3 bg-white">
                 <button onclick="cerrarPreview()" class="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</button>
                 <button onclick="descargarCertificado()" id="btnDownloadFromPreview" class="px-6 py-2.5 rounded-lg bg-[#001871] text-white font-bold hover:bg-blue-900 shadow-md transition-colors flex items-center gap-2">
@@ -196,7 +328,7 @@
         }
     </script>
     
-    <script src="../js/supabaseClient.js?v=20"></script>
-    <script src="rrhh.js?v=20"></script>
+    <script src="../js/supabaseClient.js?v=28"></script>
+    <script src="rrhh.js?v=28"></script>
 </body>
 </html>
