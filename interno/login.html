@@ -18,6 +18,9 @@
     </script>
     <link rel="icon" href="https://www.russellbedford.com.co/favicon.ico" type="image/x-icon" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabaseClient.js"></script>
 </head>
 <body class="bg-corporate-bg min-h-screen flex items-center justify-center p-6">
 
@@ -68,45 +71,38 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
 
-            // Como Nginx maneja las rutas en el VPS, usamos la ruta relativa /api/login/
-            // Si lo pruebas en tu computador local sin Nginx, cambia esto a 'http://127.0.0.1:8000/api/login/'
-            const apiUrl = '/api/login/';
-
             try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email: email, password: password })
+                // 1. Iniciar sesión segura con Supabase Auth
+                const { data: authData, error: authError } = await window.supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
                 });
 
-                const data = await response.json();
-
-                if (!response.ok) {
-                    alert('Acceso denegado: ' + (data.error || 'Credenciales incorrectas.'));
+                if (authError) {
+                    alert('Acceso denegado: Correo o contraseña incorrectos.');
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                     return;
                 }
 
-                // Guardamos los tokens JWT generados por Django
-                if (data.accessToken && !data.requiere_verificacion) {
-                    localStorage.setItem('gct_access_token', data.accessToken);
-                    if (data.refreshToken) {
-                        localStorage.setItem('gct_refresh_token', data.refreshToken);
-                    }
+                // 2. Buscar los datos del empleado en tu tabla rbgct.empleados
+                const { data: empleado, error: empError } = await window.supabaseClient
+                    .from('empleados')
+                    .select('*')
+                    .eq('correo_corporativo', email)
+                    .single();
 
-                    // Guardamos información de sesión opcional
-                    localStorage.setItem('session_email', email);
-                    if (data.user && data.user.nombre) {
-                        localStorage.setItem('session_user', data.user.nombre);
-                    }
-
+                if (empleado) {
+                    localStorage.setItem('empleado_id', empleado.id);
+                    localStorage.setItem('empleado_nombre', empleado.nombre_completo);
+                    localStorage.setItem('empleado_rol', empleado.rol);
+                    localStorage.setItem('empleado_documento', empleado.documento);
+                    
                     window.location.href = 'dashboard.html';
-                } else if (data.requiere_verificacion) {
-                    // Redirigir a pantalla de código si el backend lo pide
-                    window.location.href = 'verificar.html';
+                } else {
+                    alert('Usuario autenticado pero no encontrado en el directorio de empleados.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
                 }
 
             } catch (err) {
