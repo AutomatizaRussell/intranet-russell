@@ -19,6 +19,7 @@
     <link rel="icon" href="https://www.russellbedford.com.co/favicon.ico" type="image/x-icon" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <!-- Importar Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabaseClient.js"></script>
 </head>
@@ -85,12 +86,20 @@
                     return;
                 }
 
-                // 2. Buscar los datos del empleado en tu tabla rbgct.empleados
+                // 2. Buscar datos en la tabla rbgct.empleados
                 const { data: empleado, error: empError } = await window.supabaseClient
                     .from('empleados')
                     .select('*')
                     .eq('correo_corporativo', email)
                     .single();
+
+                if (empError) {
+                    console.error("Error detallado de Supabase:", empError);
+                    alert('Error al buscar empleado: ' + empError.message);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    return;
+                }
 
                 if (empleado) {
                     localStorage.setItem('empleado_id', empleado.id);
@@ -107,7 +116,7 @@
 
             } catch (err) {
                 console.error('Error:', err);
-                alert('Ocurrió un error al conectar con el servidor.');
+                alert('Ocurrió un error inesperado al conectar con el servidor.');
                 btn.disabled = false;
                 btn.innerHTML = originalText;
             }
