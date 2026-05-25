@@ -3,113 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Empleados | Russell Bedford</title>
+    <title>Acceso Usuarios | Russell Bedford</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = { theme: { extend: { colors: { corporate: { blue: '#001871', bg: '#F8F9FA' } } } } }
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        corporate: { blue: '#001871', bg: '#F8F9FA' } 
+                    } 
+                } 
+            } 
+        }
     </script>
-     <link
-      rel="icon"
-      href="https://www.russellbedford.com.co/favicon.ico"
-      type="image/x-icon"
-    />
+    <link rel="icon" href="https://www.russellbedford.com.co/favicon.ico" type="image/x-icon" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../js/supabaseClient.js"></script>
 </head>
 <body class="bg-corporate-bg min-h-screen flex items-center justify-center p-6">
 
-    <div class="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden flex flex-col items-center p-10 relative">
+    <div class="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden flex flex-col items-center p-10 relative border border-gray-100">
         <a href="../index.html" class="absolute top-6 left-6 text-gray-400 hover:text-corporate-blue transition">
             <i class="fa-solid fa-arrow-left"></i>
         </a>
 
         <img src="https://raw.githubusercontent.com/AutomatizaRussell/Resourse_GestionHumana/main/Logo_RB2021.png" alt="Logo" class="h-16 mb-8 mt-4">
         
-        <h2 class="text-2xl font-bold text-gray-800 mb-2">Portal Interno</h2>
-        <p class="text-gray-500 text-sm text-center mb-8">Ingresa con tus credenciales corporativas para gestionar tus certificados y nómina.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Portal de Usuarios</h2>
+        <p class="text-gray-500 text-sm text-center mb-8">Ingresa tus credenciales para continuar.</p>
 
         <form id="loginForm" class="w-full space-y-5">
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-1">Correo Electrónico</label>
                 <div class="relative">
                     <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-gray-400"></i>
-                    <input type="email" id="email" required class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none transition bg-gray-50 focus:bg-white">
+                    <input type="email" id="correo_input" placeholder="Admin@rbcol.co" required 
+                        class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none transition bg-gray-50 focus:bg-white text-gray-700">
                 </div>
             </div>
+
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Contraseña / Clave</label>
                 <div class="relative">
                     <i class="fa-solid fa-lock absolute left-4 top-3.5 text-gray-400"></i>
-                    <input type="password" id="password" required class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none transition bg-gray-50 focus:bg-white">
+                    <input type="password" id="clave_input" placeholder="•••••" required 
+                        class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-corporate-blue outline-none transition bg-gray-50 focus:bg-white text-gray-700">
                 </div>
             </div>
-            <button type="submit" class="w-full bg-corporate-blue hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition shadow-md mt-2">
+
+            <button type="submit" id="submitBtn" class="w-full bg-corporate-blue hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition shadow-md mt-2 flex justify-center items-center gap-2">
                 Iniciar Sesión
             </button>
         </form>
     </div>
 
-   <script>
+    <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Tomamos los datos del formulario
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const btn = e.target.querySelector('button[type="submit"]');
+            const email = document.getElementById('correo_input').value.trim();
+            const password = document.getElementById('clave_input').value.trim();
+            const btn = document.getElementById('submitBtn');
             const originalText = btn.innerHTML;
             
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validando...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+
+            // Como Nginx maneja las rutas en el VPS, usamos la ruta relativa /api/login/
+            // Si lo pruebas en tu computador local sin Nginx, cambia esto a 'http://127.0.0.1:8000/api/login/'
+            const apiUrl = '/api/login/';
 
             try {
-                // PASO 1: Preguntamos a la Bóveda si la clave es correcta
-                const { data: authData, error: authError } = await window.supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password,
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email, password: password })
                 });
 
-                if (authError) {
-                    alert('Acceso denegado: Correo o contraseña incorrectos.');
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert('Acceso denegado: ' + (data.error || 'Credenciales incorrectas.'));
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                     return;
                 }
 
-                // PASO 2: Buscamos el correo y el ROL en tu tabla de empleados
-                const { data: empData, error: empError } = await window.supabaseClient
-                    .from('empleados')
-                    .select('id, nombre_completo, documento, cargo, rol') 
-                    .eq('correo_corporativo', email)
-                    .single();
+                // Guardamos los tokens JWT generados por Django
+                if (data.accessToken && !data.requiere_verificacion) {
+                    localStorage.setItem('gct_access_token', data.accessToken);
+                    if (data.refreshToken) {
+                        localStorage.setItem('gct_refresh_token', data.refreshToken);
+                    }
 
-                if (empError || !empData) {
-                    await window.supabaseClient.auth.signOut(); 
-                    alert('Acceso denegado: No figuras como empleado activo.');
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                    return;
-                }
+                    // Guardamos información de sesión opcional
+                    localStorage.setItem('session_email', email);
+                    if (data.user && data.user.nombre) {
+                        localStorage.setItem('session_user', data.user.nombre);
+                    }
 
-                // PASO 3: Guardamos los datos reales en la memoria del navegador
-                localStorage.setItem('empleado_id', empData.id);
-                localStorage.setItem('empleado_nombre', empData.nombre_completo);
-                localStorage.setItem('empleado_documento', empData.documento);
-                localStorage.setItem('empleado_rol', empData.rol); 
-
-                // PASO 4: EL DESVÍO CORRECTO (El semáforo)
-                if (empData.rol === 'admin') {
-                    // Si es de RRHH, lo mandamos a la bóveda secreta de Admin
-                    window.location.href = '../admin/panel.html';
-                } else {
-                    // Si es empleado normal, lo mandamos a pedir sus certificados
                     window.location.href = 'dashboard.html';
+                } else if (data.requiere_verificacion) {
+                    // Redirigir a pantalla de código si el backend lo pide
+                    window.location.href = 'verificar.html';
                 }
 
             } catch (err) {
-                console.error('Error de sistema:', err);
-                alert('Ocurrió un error de conexión con la base de datos.');
+                console.error('Error:', err);
+                alert('Ocurrió un error al conectar con el servidor.');
                 btn.disabled = false;
                 btn.innerHTML = originalText;
             }
