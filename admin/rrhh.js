@@ -53,6 +53,10 @@ async function logoutAdmin() {
     if (btnLogout) {
         btnLogout.addEventListener('click', logoutAdmin);
     }
+    const btnLogoutMobile = document.getElementById('btn-logout-mobile');
+    if (btnLogoutMobile) {
+        btnLogoutMobile.addEventListener('click', logoutAdmin);
+    }
 })();
 
 // ==========================================
