@@ -44,8 +44,7 @@ async function logoutAdmin() {
 }
 
 (async function initAdminPage() {
-    await cargarDirectorio();
-    await cargarSolicitudesCertificados();
+    // Cargar solo las funciones existentes en este archivo
     await cargarPostulaciones();
     await cargarGestionVacantes();
 
