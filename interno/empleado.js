@@ -19,8 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (authError) throw authError;
 
-                // Si el login es exitoso, verificar el rol del empleado en la tabla 'empleados'
+                // Si el login es exitoso, verificar el rol del empleado en la tabla 'empleados' dentro del esquema rbgct
                 const { data: empleado, error: empleadoError } = await window.supabaseClient
+                    .schema('rbgct')
                     .from('empleados')
                     .select('rol, nombre_completo, correo_corporativo')
                     .eq('correo_corporativo', user.email)
