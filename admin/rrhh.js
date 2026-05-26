@@ -6,7 +6,10 @@ const adminSupabaseUrl = 'https://db.rbgct.cloud';
 const adminSupabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjIwMDAwMDAwMDB9.empG3TVP0rYZ-FUYZcm08Ua-nUfhD2NXsAjTEfGs-ic';
 const supabaseAdmin = window.supabase.createClient(adminSupabaseUrl, adminSupabaseKey);
 
-let vacantesData = [];
+let solicitudesData = [];
+let solicitudActualParaPDF = null;
+let vacantesData = []; 
+let empleadosData = []; // <--- Variable global para el CRUD de Empleados
 
 // ==========================================
 // TOAST DE NOTIFICACIONES
@@ -28,6 +31,8 @@ function mostrarNotificacion(mensaje, tipo = 'exito') {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    await cargarDirectorio();
+    await cargarSolicitudesCertificados();
     await cargarPostulaciones();
     await cargarGestionVacantes();
 
