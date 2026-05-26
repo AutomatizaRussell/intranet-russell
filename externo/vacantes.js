@@ -63,7 +63,7 @@ async function cargarVacantes() {
     try {
         const { data, error } = await window.supabaseClient
             .schema('rbgct') // <--- Agrega esta línea
-            .from('vacantes')
+            .schema('rbgct').from('vacantes')
             .select('*')
             .eq('estado', 'abierta')
             .order('fecha_publicacion', { ascending: false });
@@ -194,7 +194,7 @@ window.submitApplication = async function(e) {
         const nombreCompleto = `${nombre} (CC: ${cedula})`;
 
         const { error: insertError } = await window.supabaseClient
-            .from('postulaciones')
+            .schema('rbgct').from('postulaciones')
             .insert([{ 
                 vacante_id: currentVacanteId, 
                 nombre_candidato: nombreCompleto, 

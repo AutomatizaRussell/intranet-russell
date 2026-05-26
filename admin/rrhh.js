@@ -60,7 +60,7 @@ async function logoutAdmin() {
 // ==========================================
 async function cargarPostulaciones() {
     try {
-        const { data, error } = await window.supabaseClient.from('postulaciones').select('id, nombre_candidato, correo, telefono, url_cv, vacantes(titulo)').order('created_at', { ascending: false });
+        const { data, error } = await window.supabaseClient.schema('rbgct').from('postulaciones').select('id, nombre_candidato, correo, telefono, url_cv, vacantes(titulo)').order('created_at', { ascending: false });
         if (error) throw error;
 
         const tbody = document.querySelector('#tabla-postulaciones tbody');
@@ -95,7 +95,7 @@ async function cargarPostulaciones() {
 // ==========================================
 async function cargarGestionVacantes() {
     try {
-        const { data, error } = await window.supabaseClient.from('vacantes').select('*').order('fecha_publicacion', { ascending: false });
+        const { data, error } = await window.supabaseClient.schema('rbgct').from('vacantes').select('*').order('fecha_publicacion', { ascending: false });
         if (error) throw error;
         vacantesData = data;
 
@@ -170,10 +170,10 @@ window.guardarVacante = async function(e) {
     try {
         let error;
         if (id) {
-            const res = await window.supabaseClient.from('vacantes').update(data).eq('id', id);
+            const res = await window.supabaseClient.schema('rbgct').from('vacantes').update(data).eq('id', id);
             error = res.error;
         } else {
-            const res = await window.supabaseClient.from('vacantes').insert([data]);
+            const res = await window.supabaseClient.schema('rbgct').from('vacantes').insert([data]);
             error = res.error;
         }
         if (error) throw error;
@@ -188,7 +188,7 @@ window.guardarVacante = async function(e) {
 window.eliminarVacante = async function(id) {
     if(!confirm("⚠️ ¡ADVERTENCIA!\n\nSi eliminas esta vacante, también SE BORRARÁN todas las postulaciones asociadas a ella.\n\n¿Estás seguro?")) return;
     try {
-        const { error } = await window.supabaseClient.from('vacantes').delete().eq('id', id);
+        const { error } = await window.supabaseClient.schema('rbgct').from('vacantes').delete().eq('id', id);
         if (error) throw error;
         mostrarNotificacion('Vacante eliminada', 'exito');
         cargarGestionVacantes();
