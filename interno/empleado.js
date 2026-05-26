@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Redirigir al panel administrativo
-                window.location.href = '../admin/panel.html';
+                window.location.href = '../admin/';
 
             } catch (error) {
                 console.error('Error de autenticación:', error.message);
