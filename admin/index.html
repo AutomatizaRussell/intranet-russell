@@ -68,26 +68,27 @@
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden relative">
-        <div class="flex-1 overflow-auto p-4 md:p-8">
+    <main class="flex-1 flex flex-col overflow-hidden relative min-h-0">
+        <div class="flex-1 overflow-auto p-4 md:p-8 min-h-0">
             
             <div id="tab-postulaciones" class="tab-content active">
                 <h2 class="text-3xl font-bold text-[#001871] tracking-tight mb-6">Postulaciones Recibidas</h2>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-left border-collapse" id="tabla-postulaciones">
-                        <thead>
-                            <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-100">
-                                <th class="py-4 px-6 font-semibold">Candidato</th>
-                                <th class="py-4 px-6 font-semibold">Contacto</th>
-                                <th class="py-4 px-6 font-semibold">Vacante Aplicada</th>
-                                <th class="py-4 px-6 font-semibold text-right">Hoja de Vida</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="4" class="text-center py-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando postulaciones...</td></tr>
-                        </tbody>
-                    </table>
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-100">
+                                    <th class="py-4 px-6 font-semibold">Candidato</th>
+                                    <th class="py-4 px-6 font-semibold">Contacto</th>
+                                    <th class="py-4 px-6 font-semibold">Vacante Aplicada</th>
+                                    <th class="py-4 px-6 font-semibold text-right">Hoja de Vida</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="4" class="text-center py-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando postulaciones...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -101,21 +102,21 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-left border-collapse" id="tabla-gestion-vacantes">
-                        <thead>
-                            <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-100">
-                                <th class="py-4 px-6 font-semibold">Estado</th>
-                                <th class="py-4 px-6 font-semibold">Título de la Vacante</th>
-                                <th class="py-4 px-6 font-semibold">Área</th>
-                                <th class="py-4 px-6 font-semibold text-right">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td colspan="4" class="text-center py-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando vacantes...</td></tr>
-                        </tbody>
-                    </table>
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-100">
+                                    <th class="py-4 px-6 font-semibold">Estado</th>
+                                    <th class="py-4 px-6 font-semibold">Título de la Vacante</th>
+                                    <th class="py-4 px-6 font-semibold">Área</th>
+                                    <th class="py-4 px-6 font-semibold text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="4" class="text-center py-6 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Cargando vacantes...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
         </div>
     </main>
 
