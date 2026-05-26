@@ -30,18 +30,30 @@ function mostrarNotificacion(mensaje, tipo = 'exito') {
     }, 4000);
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function logoutAdmin() {
+    try {
+        if (window.supabaseClient && window.supabaseClient.auth) {
+            await window.supabaseClient.auth.signOut();
+        }
+    } catch (err) {
+        console.error('Error al cerrar sesión:', err);
+    } finally {
+        localStorage.clear();
+        window.location.href = '../interno/login.html';
+    }
+}
+
+(async function initAdminPage() {
     await cargarDirectorio();
     await cargarSolicitudesCertificados();
     await cargarPostulaciones();
     await cargarGestionVacantes();
 
-    document.getElementById('btn-logout').addEventListener('click', async () => {
-        if(window.supabaseClient) await window.supabaseClient.auth.signOut();
-        localStorage.clear();
-        window.location.href = '../index.html';
-    });
-});
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', logoutAdmin);
+    }
+})();
 
 // ==========================================
 // MÓDULO: POSTULACIONES RECIBIDAS
