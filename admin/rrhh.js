@@ -2,9 +2,10 @@
 // Asegúrate de importar el script de Supabase en tu HTML antes de este archivo:
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-const adminSupabaseUrl = 'https://db.rbgct.cloud';
-const adminSupabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjIwMDAwMDAwMDB9.empG3TVP0rYZ-FUYZcm08Ua-nUfhD2NXsAjTEfGs-ic';
-const supabaseAdmin = window.supabase.createClient(adminSupabaseUrl, adminSupabaseKey);
+// Use the same API host as the public client to avoid cert issues
+// Use the public client created in `js/supabaseClient.js` to avoid creating
+// a separate admin client that may point to a different host.
+// All requests will use `window.supabaseClient` instead of `supabaseAdmin`.
 
 let solicitudesData = [];
 let solicitudActualParaPDF = null;
@@ -59,7 +60,7 @@ async function logoutAdmin() {
 // ==========================================
 async function cargarPostulaciones() {
     try {
-        const { data, error } = await supabaseAdmin.from('postulaciones').select('id, nombre_candidato, correo, telefono, url_cv, vacantes(titulo)').order('created_at', { ascending: false });
+        const { data, error } = await window.supabaseClient.from('postulaciones').select('id, nombre_candidato, correo, telefono, url_cv, vacantes(titulo)').order('created_at', { ascending: false });
         if (error) throw error;
 
         const tbody = document.querySelector('#tabla-postulaciones tbody');
@@ -94,7 +95,7 @@ async function cargarPostulaciones() {
 // ==========================================
 async function cargarGestionVacantes() {
     try {
-        const { data, error } = await supabaseAdmin.from('vacantes').select('*').order('fecha_publicacion', { ascending: false });
+        const { data, error } = await window.supabaseClient.from('vacantes').select('*').order('fecha_publicacion', { ascending: false });
         if (error) throw error;
         vacantesData = data;
 
@@ -169,10 +170,10 @@ window.guardarVacante = async function(e) {
     try {
         let error;
         if (id) {
-            const res = await supabaseAdmin.from('vacantes').update(data).eq('id', id);
+            const res = await window.supabaseClient.from('vacantes').update(data).eq('id', id);
             error = res.error;
         } else {
-            const res = await supabaseAdmin.from('vacantes').insert([data]);
+            const res = await window.supabaseClient.from('vacantes').insert([data]);
             error = res.error;
         }
         if (error) throw error;
@@ -187,7 +188,7 @@ window.guardarVacante = async function(e) {
 window.eliminarVacante = async function(id) {
     if(!confirm("⚠️ ¡ADVERTENCIA!\n\nSi eliminas esta vacante, también SE BORRARÁN todas las postulaciones asociadas a ella.\n\n¿Estás seguro?")) return;
     try {
-        const { error } = await supabaseAdmin.from('vacantes').delete().eq('id', id);
+        const { error } = await window.supabaseClient.from('vacantes').delete().eq('id', id);
         if (error) throw error;
         mostrarNotificacion('Vacante eliminada', 'exito');
         cargarGestionVacantes();
