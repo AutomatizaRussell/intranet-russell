@@ -86,11 +86,10 @@
                     return;
                 }
 
-                // 2. Buscar datos en la tabla rbgct.empleados
-                // 2. Buscar datos en la tabla rbgct.empleados
-                // Aquí especificamos el esquema 'rbgct' dentro del nombre de la tabla
+               // 2. Buscar datos especificando el esquema correcto con .schema()
                 const { data: empleado, error: empError } = await window.supabaseClient
-                    .from('rbgct.empleados')
+                    .schema('rbgct')
+                    .from('empleados')
                     .select('*')
                     .eq('correo_corporativo', email)
                     .single();
