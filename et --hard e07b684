@@ -1,0 +1,23 @@
+[33me07b684[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix login error
+[33m45acdcb[m Fix anon key error
+[33mdfd54d1[m Fic errors login
+[33m6c6a309[m Configure Login
+[33m0a7efe6[m Fix Supa Url
+[33m57b8e74[m Supa Configurations
+[33m58c208f[m Final Update Server Supa
+[33m42b3df6[m Fix login Supa
+[33m9f1aa74[m Final Update Coolify
+[33m5a2e3a2[m feat: Implement CRUD functionality for employees and vacancies in admin panel
+[33mc9af10a[m[33m ([m[1;31mupstream/main[m[33m)[m 
+[33m9dc44d7[m feat: Enhance job vacancies page with improved rendering and filtering functionality
+[33m8d7ca96[m Update script references in panel.html to include versioning for better cache management
+[33m9b31570[m Add favicon link to multiple HTML files for improved branding
+[33maf84d48[m Enhance employee dashboard and admin panel functionality with session checks and certificate request improvements
+[33m9e414e0[m Add admin role check to redirect unauthorized users from the dashboard
+[33m4d62b37[m Update Supabase URL to secure endpoint and enhance login functionality with role-based redirection
+[33ma9e2c38[m Add job vacancies page and application functionality with Supabase integration
+[33m1bee9d0[m Add dashboard layout and employee certificate request functionality
+[33m7844ef1[m Add initial HTML structure for Intranet Corporativa with Tailwind CSS integration
+[33m4d6c59a[m Update file permissions for multiple HTML, JS, and CSS files
+[33m3245834[m Add Supabase initialization and data loading functions for RRHH Dashboard
+[33m8ec35ca[m Add initial files for RRHH Dashboard and related functionalities
