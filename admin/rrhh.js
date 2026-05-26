@@ -45,7 +45,14 @@ async function logoutAdmin() {
 }
 
 (async function initAdminPage() {
-    // Cargar solo las funciones existentes en este archivo
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    const rolActual = localStorage.getItem('empleado_rol');
+    if (!session || rolActual !== 'admin') {
+        localStorage.clear();
+        window.location.href = '../interno/login.html';
+        return;
+    }
+
     await cargarPostulaciones();
     await cargarGestionVacantes();
 
@@ -185,8 +192,14 @@ window.guardarVacante = async function(e) {
         mostrarNotificacion('Vacante guardada correctamente', 'exito');
         cerrarModalVacante();
         cargarGestionVacantes();
-    } catch (err) { console.error(err); mostrarNotificacion('Error al guardar la vacante', 'error'); } 
-    finally { btn.disabled = false; btn.innerHTML = ogText; }
+    } catch (err) {
+        console.error('Error guardando vacante:', err);
+        const errorMessage = err?.message || 'Error al guardar la vacante';
+        mostrarNotificacion(errorMessage, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = ogText;
+    }
 }
 
 window.eliminarVacante = async function(id) {
